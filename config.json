@@ -1,0 +1,25 @@
+{
+  "projects": [
+    "INTAI"
+  ],
+  "dry_run": true,
+  "checks": {
+    "empty_description": true,
+    "template_not_filled": true,
+    "missing_assignee": true,
+    "missing_priority": false
+  },
+  "template_placeholder": "insert your text here",
+  "issue_types": ["Feature", "Story", "Epic"],
+  "max_issues_per_run": 50,
+  "email": {
+    "smtp_server": "mail.sap.com",
+    "smtp_port": 587,
+    "sender": "I777951@sap.com",
+    "use_tls": true
+  },
+  "message_template": {
+    "subject": "Jira Ticket {issue_key} – Angaben für KBV-Kategorisierung unvollständig",
+    "body": "Hallo {assignee_name},\n\ndein Jira Ticket {issue_key} – \"{summary}\" wird gerade im Rahmen des KI-Genehmigungsprozesses (Interims-KI-KBV) geprüft.\n\nDamit das PMO die Einordnung in Kategorie S, M oder L vornehmen kann, fehlen noch folgende Angaben:\n\n{findings}\n\nBitte ergänze das Ticket entsprechend, damit der Genehmigungsprozess fortgesetzt werden kann.\n\nTicket-Link: {issue_url}\n\n---\nDiese Nachricht wurde automatisch generiert."
+  }
+}
