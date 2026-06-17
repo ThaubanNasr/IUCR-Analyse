@@ -6,24 +6,67 @@ Dieses Tool analysiert IUCR Use Cases automatisch auf KBV-Compliance (SAP Interi
 
 ## Voraussetzungen
 
-- **Claude Code** installiert und gestartet
-- **Jira MCP-Server** konfiguriert (für JIRA-Ticket-Abruf)
-- Excel-Exportdatei aus dem IUCR-System im Projektverzeichnis
+- **Claude Code** installiert ([Download](https://claude.ai/download))
+- SAP VPN aktiv (bei Remote-Arbeit)
+- SAP Jira Account
+- Excel-Exportdatei aus dem IUCR-System
 
 ---
 
 ## Setup
 
-1. Repository klonen:
-   ```
-   git clone https://github.com/ThaubanNasr/IUCR-Analyse.git
-   ```
-2. Verzeichnis in Claude Code öffnen
-3. Neue IUCR-Excel-Datei ins Verzeichnis legen (Dateiname muss mit `IUCR_` beginnen, z.B. `IUCR_15June.xlsx`)
+### Schritt 1: Repository klonen
+
+```
+git clone https://github.com/ThaubanNasr/IUCR-Analyse.git
+```
+
+Dann das Verzeichnis in Claude Code öffnen.
+
+### Schritt 2: Jira MCP einrichten
+
+Einmalig im Terminal ausführen:
+
+```
+claude mcp add sap-jira --transport http https://mcp.jira.tools.sap/mcp
+```
+
+Beim ersten Aufruf öffnet sich ein Browser-Fenster zur OAuth-Anmeldung mit dem SAP-Jira-Account — einmalig bestätigen, danach läuft die Authentifizierung automatisch.
+
+**Verbindung testen** — in Claude Code eingeben:
+
+```
+Zeige mir meine letzten Jira-Tickets
+```
+
+Wenn Daten zurückkommen, ist alles korrekt eingerichtet.
+
+> **Hinweis:** Bei „Project not found"-Fehlern muss der Projektadmin den technischen User `jira-mcp` zum Projekt hinzufügen.
+
+### Schritt 3: Excel-Datei ins Verzeichnis legen
+
+Die aktuelle IUCR-Exportdatei ins Projektverzeichnis kopieren. Der Dateiname muss mit `IUCR_` beginnen, z.B. `IUCR_15June.xlsx`.
 
 ---
 
 ## Nutzung
+
+### Übersicht erstellen
+
+```
+übersicht
+```
+
+Claude liest automatisch die neueste `IUCR_*.xlsx` ein, analysiert die 15 neuesten Use Cases (gefiltert nach KI-Technologie, Status „In Development", Service Package 1–4) und schreibt die Datei `kbv_uebersicht.html` neu. Dauert ca. 2–3 Minuten.
+
+### HTML-Übersicht öffnen
+
+Die Datei `kbv_uebersicht.html` im Browser öffnen.
+
+- Kompakte Tabelle mit allen Cases (RequestID, Name, LOB, Ampel)
+- Klick auf eine Zeile → Detailansicht mit personenbezogenen Daten, Leistungs-/Verhaltenskontrolle und fehlenden KBV-Pflichtpunkten
+- **„In Outlook öffnen"** → öffnet fertigen E-Mail-Entwurf in Outlook (nichts wird automatisch versendet)
+- **„Kopieren"** → kopiert Betreff + Text in die Zwischenablage
 
 ### Einzelanalyse eines JIRA-Tickets
 
@@ -35,51 +78,11 @@ INTAI-2481
 intai 2481
 ```
 
-Claude analysiert automatisch:
-- Inhalt des Tickets
-- Personenbezogene Daten (→ DPIA erforderlich?)
-- Leistungs- und Verhaltenskontrolle (→ Nutzungsausschluss nötig?)
-- Fehlende KBV-Pflichtpunkte
-- Fertiger E-Mail-Entwurf an den Assignee
+Claude analysiert automatisch Inhalt, personenbezogene Daten, Leistungs-/Verhaltenskontrolle, fehlende KBV-Pflichtpunkte und erstellt einen fertigen E-Mail-Entwurf.
 
----
+### Neue Excel-Datei verwenden
 
-### Übersicht erstellen
-
-```
-übersicht
-```
-
-Claude:
-1. Liest automatisch die **neueste IUCR_*.xlsx** im Verzeichnis ein
-2. Filtert nach: Status = In Development, Service Package 1–4, Technologie = Artificial Intelligence oder Joule Studio Agent
-3. Nimmt die 15 neuesten Einträge
-4. Ruft verlinkte JIRA-Tickets ab (falls in `botName` enthalten)
-5. Analysiert alle 15 Cases **parallel** (dauert ca. 2–3 Minuten)
-6. Schreibt `kbv_uebersicht.html` neu
-
----
-
-### HTML-Übersicht öffnen
-
-Die Datei `kbv_uebersicht.html` im Browser öffnen.
-
-**Funktionen:**
-- Kompakte Tabelle mit allen Cases (RequestID, Name, LOB, Ampel)
-- Klick auf eine Zeile → Detailansicht mit:
-  - Personenbezogene Daten + DPIA-Status
-  - Leistungs-/Verhaltenskontrolle (HOCH / MITTEL / GERING)
-  - Fehlende KBV-Pflichtpunkte
-  - E-Mail-Entwurf
-- **„In Outlook öffnen"** → öffnet fertigen Entwurf in Outlook (nichts wird automatisch versendet)
-- **„Kopieren"** → kopiert Betreff + Text in die Zwischenablage
-
----
-
-## Neue Excel-Datei verwenden
-
-1. Neue IUCR-Excel-Exportdatei ins Projektverzeichnis legen (Name muss mit `IUCR_` beginnen)
-2. `übersicht` eingeben → Claude nimmt automatisch die neueste Datei
+Neue IUCR-Exportdatei ins Projektverzeichnis legen (Name muss mit `IUCR_` beginnen), dann `übersicht` eingeben — Claude nimmt automatisch die neueste Datei.
 
 ---
 
@@ -101,9 +104,3 @@ Die Datei `kbv_uebersicht.html` im Browser öffnen.
 - IUCR-Eintrag vollständig?
 - Disclaimer für Endnutzer vorhanden?
 - Mitigationsmaßnahmen beschrieben?
-
----
-
-## Regeln & Konfiguration
-
-Alle Regeln sind in `CLAUDE.md` im Projektverzeichnis dokumentiert — Filter, HTML-Layout, E-Mail-Stil, KBV-Prüflogik.
