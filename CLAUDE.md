@@ -22,7 +22,7 @@ Beim Einlesen der Excel immer die **neueste IUCR_*.xlsx** im Projektverzeichnis 
 
 ## Übersichts-Befehl
 Wenn der User **„übersicht"** (oder „/übersicht") schreibt:
-1. Im Projektverzeichnis `C:\Users\I777951\WoCCo\Automate\missingJira` die **neueste IUCR_*.xlsx** suchen (nach Dateiänderungsdatum — neueste gewinnt). Diese Datei einlesen (Sheet: "SAPUI5 Export").
+1. Im Projektverzeichnis `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse` die **neueste IUCR_*.xlsx** suchen (nach Dateiänderungsdatum — neueste gewinnt). Diese Datei einlesen (Sheet: "SAPUI5 Export").
 2. Die **15 neusten Einträge** nach den **Excel-Filtern (Standard)** filtern: botStatusId = In Development, servicePackageId 1–4, technologiesId = `Artificial Intelligence` oder `Joule Studio Agent`
 3. Für jeden Eintrag: falls eine JIRA-Ticket-ID in der Spalte `botName` enthalten ist, das Ticket per Jira MCP abrufen und in die Analyse einbeziehen
 4. Jedes Ticket vollständig analysieren (Excel-Daten + ggf. JIRA-Ticket + KBV-Prüfung: personenbezogene Daten, Leistungs-/Verhaltenskontrolle, fehlende Pflichtpunkte, Ampel)
