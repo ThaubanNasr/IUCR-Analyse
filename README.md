@@ -1,106 +1,133 @@
-# IUCR KBV-Analyse Tool
+# KBV-Kategorisierungs-Tool
 
-Dieses Tool analysiert IUCR Use Cases automatisch auf KBV-Compliance (SAP Interims-Konzernbetriebsvereinbarung über KI, Stand 31.10.2025) und erstellt eine interaktive HTML-Übersicht mit E-Mail-Entwürfen.
+Analysiert KI-Use-Cases aus dem IUCR anhand der **Interims-Konzernbetriebsvereinbarung über KI (Stand: 31.10.2025)** und erstellt eine interaktive HTML-Auswertung mit Kategorisierung S / M / L.
 
 ---
 
 ## Voraussetzungen
 
-- **Claude Code** installiert ([Download](https://claude.ai/download))
-- SAP VPN aktiv (bei Remote-Arbeit)
-- SAP Jira Account
-- Excel-Exportdatei aus dem IUCR-System
+- **Claude Code**
+- **JIRA MCP** verbunden (Einrichtung siehe unten)
+- Excel-Export aus dem IUCR im Ordner `data/`
 
 ---
 
-## Setup
+## JIRA MCP einrichten
 
-### Schritt 1: Repository klonen
+Das Tool ruft JIRA-Tickets automatisch ab. Dafür muss der MCP-Server einmalig konfiguriert sein.
 
-```
-git clone https://github.com/ThaubanNasr/IUCR-Analyse.git
-```
+Die Datei `.mcp.json` im Projektverzeichnis muss folgendes enthalten:
 
-Dann das Verzeichnis in Claude Code öffnen.
-
-### Schritt 2: Jira MCP einrichten
-
-Einmalig im Terminal ausführen:
-
-```
-claude mcp add sap-jira --transport http https://mcp.jira.tools.sap/mcp
-```
-
-Beim ersten Aufruf öffnet sich ein Browser-Fenster zur OAuth-Anmeldung mit dem SAP-Jira-Account — einmalig bestätigen, danach läuft die Authentifizierung automatisch.
-
-**Verbindung testen** — in Claude Code eingeben:
-
-```
-Zeige mir meine letzten Jira-Tickets
+```json
+{
+  "mcpServers": {
+    "sap-jira": {
+      "type": "http",
+      "url": "https://mcp.jira.tools.sap/mcp"
+    }
+  }
+}
 ```
 
-Wenn Daten zurückkommen, ist alles korrekt eingerichtet.
+**Einrichtung in Claude Code:**
+1. Claude Code öffnen
+2. In das Projektverzeichnis navigieren (`C:\Users\...\IUCR-Analyse`)
+3. Die `.mcp.json` liegt bereits vor — kein weiterer Schritt nötig
+4. Beim ersten JIRA-Abruf ggf. einmalig im Browser authentifizieren (SAP SSO)
 
-> **Hinweis:** Bei „Project not found"-Fehlern muss der Projektadmin den technischen User `jira-mcp` zum Projekt hinzufügen.
-
-### Schritt 3: Excel-Datei ins Verzeichnis legen
-
-Die aktuelle IUCR-Exportdatei ins Projektverzeichnis kopieren. Der Dateiname muss mit `IUCR_` beginnen, z.B. `IUCR_15June.xlsx`.
+> Falls JIRA nicht erreichbar ist, werden nur die Excel-Daten für die Analyse verwendet — die Kategorisierung funktioniert trotzdem, ist aber weniger präzise.
 
 ---
 
-## Nutzung
-
-### Übersicht erstellen
+## Verzeichnisstruktur
 
 ```
-übersicht
+IUCR-Analyse/
+├── data/                          ← Excel hier ablegen
+│   └── <beliebiger-name>.xlsx     ← neueste Datei wird automatisch verwendet
+├── kbv_kategorisierung_proto.html ← Ausgabedatei (wird bei jedem Aufruf überschrieben)
+├── CLAUDE.md                      ← Projektregeln (nicht ändern)
+└── .mcp.json / .env               ← Konfiguration
 ```
-
-Claude liest automatisch die neueste `IUCR_*.xlsx` ein, analysiert die 15 neuesten Use Cases (gefiltert nach KI-Technologie, Status „In Development", Service Package 1–4) und schreibt die Datei `kbv_uebersicht.html` neu. Dauert ca. 2–3 Minuten.
-
-### HTML-Übersicht öffnen
-
-Die Datei `kbv_uebersicht.html` im Browser öffnen.
-
-- Kompakte Tabelle mit allen Cases (RequestID, Name, LOB, Ampel)
-- Klick auf eine Zeile → Detailansicht mit personenbezogenen Daten, Leistungs-/Verhaltenskontrolle und fehlenden KBV-Pflichtpunkten
-- **„In Outlook öffnen"** → öffnet fertigen E-Mail-Entwurf in Outlook (nichts wird automatisch versendet)
-- **„Kopieren"** → kopiert Betreff + Text in die Zwischenablage
-
-### Einzelanalyse eines JIRA-Tickets
-
-Einfach die Ticketnummer eingeben — mit oder ohne Bindestrich, groß oder klein:
-
-```
-INTAI-2481
-2481
-intai 2481
-```
-
-Claude analysiert automatisch Inhalt, personenbezogene Daten, Leistungs-/Verhaltenskontrolle, fehlende KBV-Pflichtpunkte und erstellt einen fertigen E-Mail-Entwurf.
-
-### Neue Excel-Datei verwenden
-
-Neue IUCR-Exportdatei ins Projektverzeichnis legen (Name muss mit `IUCR_` beginnen), dann `übersicht` eingeben — Claude nimmt automatisch die neueste Datei.
 
 ---
 
-## Ampel-Logik
+## Cases analysieren
 
-| Ampel | Bedeutung |
+Einfach natürlich formulieren — kein festes Schlüsselwort nötig:
+
+| Eingabe | Was passiert |
 |---|---|
-| 🔴 ROT | Kritische KBV-Lücken — sofortiger Handlungsbedarf |
-| 🟡 GELB | Kleinere Lücken — Nachbesserung nötig |
-| 🟢 OK | Keine wesentlichen offenen Pflichtpunkte |
+| `analysiere die 5 neuesten` | 5 neueste Cases aus Excel — Zahl frei wählbar |
+| `analysiere IRPA-R2487` | Genau dieser Case |
+| `analysiere IRPA-R2487 IRPA-R2312` | Mehrere Cases auf einmal |
+| `analysiere INTAI-1688` | Per JIRA-ID (auch mehrere) |
+| Screenshot einfügen | Genau die Cases im Bild analysieren |
+| `letzte Woche bis IRPA-R2492` | Delta-Modus: alle neuen Cases ab dieser ID aufwärts |
+| Screenshot + `letzte Woche bis IRPA-R2492` | Eine HTML mit zwei Abschnitten: My Action Required + neue Cases |
 
 ---
 
-## Was wird geprüft (KBV-Pflichtpunkte)
+## Wöchentlicher Workflow
 
-- DPIA (Datenschutzfolgeabschätzung) beantragt?
-- Nutzungsausschluss für Leistungs- und Verhaltenskontrolle dokumentiert?
-- Personenbezogene Daten vollständig beschrieben?
-- IUCR-Eintrag vollständig?
-- Disclaimer für Endnutzer vorhanden?
-- Mitigationsmaßnahmen beschrieben?
+1. Neue Excel aus dem IUCR exportieren → in `data/` ablegen
+2. Screenshot der „My Action Required"-Liste machen
+3. Eingabe: Screenshot + `letzte Woche bis IRPA-RXXXX`
+4. Claude erstellt Proto mit zwei Abschnitten:
+   - **My Action Required** — Cases wo du handeln musst
+   - **Neue Cases seit letzter Woche** — alle neuen seit der letzten Bearbeitung
+5. `kbv_kategorisierung_proto.html` im Browser öffnen
+
+---
+
+## Was die HTML-Datei zeigt
+
+**Eingeklappt** (Übersicht):
+- Kategorie-Badge **S** (grün) / **M** (gelb) / **L** (rot)
+- Case-Titel, Case-ID, JIRA-Link
+- LOB, Service Package, Go-Live-Datum, WoCCo-Status
+
+**Aufgeklappt** (nach Klick auf Header):
+
+| Bereich | Inhalt |
+|---|---|
+| Personenbezogene Daten (blau) | Welche Daten, DPIA-Badge |
+| Auswirkungen auf Mitarbeitende (lila) | Eingriffstiefe, Impact-Badge |
+| Mitigationsmaßnahmen | ✓ Bereits geplant · → Offen · ↑ Weg zu S |
+| Vollständiges Gutachten | Fließtext im KBV-Format, separat aufklappbar |
+
+**Suche** oben rechts filtert live nach Titel, Case-ID und JIRA-ID.
+
+---
+
+## Kategorisierungslogik
+
+| Kategorie | Personenbezogene Daten | Auswirkungen |
+|---|---|---|
+| **S** | Keine / nur Authentifizierung | Gering — Nebenaufgaben, Assistenzfunktion |
+| **M** | Mitarbeiterdaten im Arbeitsprozess | Mittel — Kernaufgaben teilweise betroffen |
+| **L** | Weitreichend / sensibel | Hoch — Aufgabenersatz oder Entscheidungsübernahme |
+
+---
+
+## Excel-Datenquelle
+
+- Neueste `*.xlsx` im Ordner `data/` wird automatisch verwendet
+- Dateiname egal — neue Excel einfach reinlegen
+- Sheet muss „SAPUI5 Export" heißen
+
+**Automatische Filter:** Status `In Development` · Service Package 1–4 · Technologie `Artificial Intelligence` oder `Joule Studio Agent`
+
+---
+
+## Einzelticket-Analyse
+
+JIRA-Nummer in den Chat schreiben (z.B. `INTAI-1688`) → vollständige KBV-Prüfung + E-Mail-Entwurf, kein HTML.
+
+---
+
+## Hinweise
+
+- HTML-Datei ist vollständig offline nutzbar — kein Server nötig
+- Weitergabe: Datei als Anhang per Mail oder Teams
+- Gutachten-Texte sind keine Rechtsmeinung — interne Arbeitshilfe auf Basis der Interims-KBV
