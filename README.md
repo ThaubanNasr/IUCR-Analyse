@@ -1,6 +1,8 @@
-# KBV-Kategorisierungs-Tool
+# MISTA — Mitigation & Impact Screening Tool for AI
 
 Analysiert KI-Use-Cases aus dem IUCR anhand der **Interims-Konzernbetriebsvereinbarung über KI (Stand: 31.10.2025)** und erstellt eine interaktive HTML-Auswertung mit Kategorisierung S / M / L.
+
+> **MISTA** = *Mitigation & Impact Screening Tool for AI*
 
 ---
 
@@ -43,11 +45,11 @@ Die Datei `.mcp.json` im Projektverzeichnis muss folgendes enthalten:
 
 ```
 IUCR-Analyse/
-├── data/                          ← Excel hier ablegen
-│   └── <beliebiger-name>.xlsx     ← neueste Datei wird automatisch verwendet
-├── kbv_kategorisierung_proto.html ← Ausgabedatei (wird bei jedem Aufruf überschrieben)
-├── CLAUDE.md                      ← Projektregeln (nicht ändern)
-└── .mcp.json / .env               ← Konfiguration
+├── data/                        ← Excel hier ablegen
+│   └── <beliebiger-name>.xlsx   ← neueste Datei wird automatisch verwendet
+├── mista_DDMMYYYY.html          ← Ausgabedatei (Datum im Namen, z.B. mista_02072026.html)
+├── CLAUDE.md                    ← Projektregeln (nicht ändern)
+└── .mcp.json / .env             ← Konfiguration
 ```
 
 ---
@@ -73,10 +75,10 @@ Einfach natürlich formulieren — kein festes Schlüsselwort nötig:
 1. Neue Excel aus dem IUCR exportieren → in `data/` ablegen
 2. Screenshot der „My Action Required"-Liste machen
 3. Eingabe: Screenshot + `letzte Woche bis IRPA-RXXXX`
-4. Claude erstellt Proto mit zwei Abschnitten:
+4. Claude erstellt eine HTML mit zwei Abschnitten:
    - **My Action Required** — Cases wo du handeln musst
    - **Neue Cases seit letzter Woche** — alle neuen seit der letzten Bearbeitung
-5. `kbv_kategorisierung_proto.html` im Browser öffnen
+5. `mista_DDMMYYYY.html` im Browser öffnen
 
 ---
 
