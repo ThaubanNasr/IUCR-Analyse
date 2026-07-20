@@ -42,9 +42,9 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 - Nur „My Action Required": Standard-Filter + `APR__WOCCO__STATUS in ('Waiting for WoCCo Feedback', 'Input Required')`
 - Kein zweiter Abschnitt
 
-**Mit Anzahl (z.B. „10 neueste" oder „letzte 15"):**
-- Abschnitt 1 — „My Action Required": WoCCo-Filter wie oben
-- Abschnitt 2 — „Neue Cases": Standard-Filter, absteigende Sortierung, genannte Anzahl, Cases aus Abschnitt 1 nicht doppelt anzeigen
+**Mit Anzahl (z.B. „5 neueste" oder „10 neueste"):**
+- Abschnitt 1 — „My Action Required": Standard-Filter + WoCCo-Filter (IDs merken)
+- Abschnitt 2 — „Neue Cases": Standard-Filter, kein WoCCo-Filter, absteigende Sortierung nach `LIFECYCLE__CREATED_DATE`, genannte Anzahl, My Action Required IDs per `not in` ausschließen
 
 **Mit expliziten IDs oder anderem Filter:**
 - Nur die genannten Cases / den genannten Filter verwenden, kein WoCCo-Filter, keine Zweiteilung
