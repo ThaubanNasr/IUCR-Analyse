@@ -81,3 +81,11 @@ Einfach natürlich formulieren:
 - Weitergabe: Datei als Anhang per Mail oder Teams
 - Gutachten-Texte sind keine Rechtsmeinung — interne Arbeitshilfe auf Basis der Interims-KBV
 
+---
+
+## Fallback — wenn IUCR MCP nicht verfügbar ist
+
+1. Excel-Export aus dem IUCR herunterladen und in den Ordner `data/` legen
+2. Claude entweder einen Screenshot der gewünschten Cases geben oder die Case-IDs / JIRA-IDs direkt nennen
+3. Claude liest die Excel aus und erstellt die MISTA wie gewohnt
+
