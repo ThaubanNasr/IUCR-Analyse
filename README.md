@@ -18,7 +18,7 @@ Analysiert KI-Use-Cases aus dem IUCR anhand der **Interims-Konzernbetriebsverein
 
 Das Tool ruft IUCR und JIRA automatisch per MCP ab. Die `.mcp.json` liegt bereits vor.
 
-**MCP-Server hinzufügen (einmalig):**
+**MCP-Server hinzufügen (einmalig, im Claude Code Terminal):**
 
 ```bash
 # IUCR
