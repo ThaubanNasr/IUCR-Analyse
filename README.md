@@ -16,12 +16,19 @@ Analysiert KI-Use-Cases aus dem IUCR anhand der **Interims-Konzernbetriebsverein
 
 ## MCP einrichten
 
-Das Tool ruft IUCR und JIRA automatisch per MCP ab. Einmalig im Browser authentifizieren:
+Das Tool ruft IUCR und JIRA automatisch per MCP ab. Die `.mcp.json` liegt bereits vor.
 
-- **IUCR:** [iucr-mcp.cfapps.eu10.hana.ondemand.com](https://iucr-mcp.cfapps.eu10.hana.ondemand.com)
-- **JIRA:** [mcp.jira.tools.sap/mcp](https://mcp.jira.tools.sap/mcp)
+**MCP-Server hinzufügen (einmalig):**
 
-Die `.mcp.json` im Projektverzeichnis liegt bereits vor — kein weiterer Schritt nötig.
+```bash
+# IUCR
+claude mcp add --transport http iucr-mcp-prod https://iucr-mcp.cfapps.eu10.hana.ondemand.com/mcp
+
+# JIRA
+claude mcp add --transport http sap-jira https://mcp.jira.tools.sap/mcp
+```
+
+Beim ersten Aufruf öffnet sich ein Browser-Fenster zur SAP SSO-Authentifizierung — einmalig bestätigen, danach läuft es automatisch.
 
 ---
 
