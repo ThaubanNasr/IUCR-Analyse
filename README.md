@@ -34,14 +34,14 @@ Beim ersten Aufruf öffnet sich ein Browser-Fenster zur SAP SSO-Authentifizierun
 
 ## Cases analysieren
 
-Einfach natürlich formulieren:
+Einfach natürlich formulieren — kein festes Schlüsselwort nötig. Claude erkennt aus dem Kontext was gemeint ist und fragt bei Unklarheit nach.
 
 | Eingabe | Was passiert |
 |---|---|
-| `los` | My Action Required Cases (WoCCo-Filter) |
-| `los, + 10 neueste` | My Action Required + 10 neueste Cases |
-| `analysiere IRPA-R2487` | Genau dieser Case |
-| `analysiere INTAI-1688` | Per JIRA-ID |
+| `los` / `mach` / `erstell` | My Action Required Cases (WoCCo-Filter) |
+| `+ 10 neueste` | My Action Required + 10 neueste Cases |
+| `IRPA-R2487` | Genau dieser Case |
+| `INTAI-1688` | Per JIRA-ID |
 | Screenshot einfügen | Genau die Cases im Bild analysieren |
 
 ---

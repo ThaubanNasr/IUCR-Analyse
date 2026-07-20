@@ -23,9 +23,9 @@ Bei allen JQL-Abfragen:
 
 ---
 
-## Cases analysieren / Proto erstellen
+## Cases analysieren / MISTA erstellen
 
-Wenn der User **„analysiere"**, **„kategorisierung"**, **„erstelle proto"** oder ähnliches schreibt — oder einfach Cases nennt — immer die KBV-Kategorisierungs-Analyse erstellen und `kbv_kategorisierung_proto.html` neu schreiben.
+Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schlüsselwort — die KBV-Kategorisierungs-Analyse durchführen und `mista_DDMMYYYY.html` erstellen. Bei Unklarheit kurz nachfragen.
 
 ### Datenquelle — automatisch wählen
 
