@@ -32,18 +32,6 @@ Beim ersten Aufruf öffnet sich ein Browser-Fenster zur SAP SSO-Authentifizierun
 
 ---
 
-## Verzeichnisstruktur
-
-```
-IUCR-Analyse/
-├── data/                        ← Excel-Fallback (falls MCP nicht verfügbar)
-├── mista_DDMMYYYY.html          ← Ausgabedatei (wird bei jeder Erstellung ersetzt)
-├── CLAUDE.md                    ← Projektregeln (nicht ändern)
-└── .mcp.json / .env             ← Konfiguration
-```
-
----
-
 ## Cases analysieren
 
 Einfach natürlich formulieren:
