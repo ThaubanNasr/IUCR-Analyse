@@ -5,7 +5,7 @@ Immer auf Deutsch antworten.
 
 ---
 
-## Excel-Filter (Standard)
+## Excel-Filter (Fallback — nur wenn MCP nicht verfügbar)
 Neueste `*.xlsx` im Unterordner `data/` des Projektverzeichnisses verwenden (Dateiname egal, bei mehreren → nach Dateiänderungsdatum neueste). Sheet: „SAPUI5 Export". Folgende Filter anwenden:
 - **botStatusId:** In Development
 - **servicePackageId:** beginnt mit 1, 2, 3 oder 4
@@ -27,20 +27,39 @@ Bei allen JQL-Abfragen:
 
 Wenn der User **„analysiere"**, **„kategorisierung"**, **„erstelle proto"** oder ähnliches schreibt — oder einfach Cases nennt — immer die KBV-Kategorisierungs-Analyse erstellen und `kbv_kategorisierung_proto.html` neu schreiben.
 
+### Datenquelle — automatisch wählen
+
+- **MCP verfügbar (bevorzugt):** IUCR per `mcp__iucr-mcp-prod__query` abrufen. Standard-Filter:
+  - `STATUS = 'In Development'`
+  - `SOLUTION_TYPE in ('Artificial Intelligence', 'Joule Studio Agent')`
+  - `SERVICE_PACKAGE in ('1 - Do It Yourself (Citizen Development)', '2 - Operations Package', '3 - Development & Operations Package', '4 - PoC, Development & Ops (Full Service Package)')`
+  - Sortierung: `LIFECYCLE__CREATED_DATE desc`
+- **Fallback (kein MCP):** Neueste `*.xlsx` aus `data/`, Sheet „SAPUI5 Export", gleiche Filter.
+
+### Standard-MISTA — Modi
+
+**Standard (ohne weitere Angabe):**
+- Nur „My Action Required": Standard-Filter + `APR__WOCCO__STATUS in ('Waiting for WoCCo Feedback', 'Input Required')`
+- Kein zweiter Abschnitt
+
+**Mit Anzahl (z.B. „10 neueste" oder „letzte 15"):**
+- Abschnitt 1 — „My Action Required": WoCCo-Filter wie oben
+- Abschnitt 2 — „Neue Cases": Standard-Filter, absteigende Sortierung, genannte Anzahl, Cases aus Abschnitt 1 nicht doppelt anzeigen
+
+**Mit expliziten IDs oder anderem Filter:**
+- Nur die genannten Cases / den genannten Filter verwenden, kein WoCCo-Filter, keine Zweiteilung
+
 ### Modi — automatisch erkennen
 
-- **Nur Screenshot** → Proto mit genau den im Bild sichtbaren Cases erstellen.
-- **Nur „letzte Woche bis IRPA-RXXX"** (oder INTAI-ID) → Delta-Modus: Excel einlesen, Standard-Filter, alle Cases ab der genannten ID aufwärts, Proto erstellen. Keine Begrenzung auf 15.
-- **Beides zusammen** (Screenshot + „letzte Woche bis...") → Eine Proto mit zwei Abschnitten: oben „My Action Required" (Cases aus Screenshot), darunter „Neue Cases seit letzter Woche" (Delta aus Excel).
-- **Ohne Angabe** → 15 neueste Cases aus Excel (Standard-Filter)
-- **Mit IDs** → Nur genannte Cases (IRPA-R... oder INTAI-...), Anzahl unbegrenzt
-- **Mit Bild(ern)** → Informationen direkt aus dem Bild extrahieren, ggf. JIRA ergänzend abrufen
+- **Nur Screenshot** → MISTA mit genau den im Bild sichtbaren Cases erstellen.
+- **Mit IDs** → Nur genannte Cases (IRPA-R... oder INTAI-...), per `mcp__iucr-mcp-prod__query` oder JIRA abrufen.
+- **Mit Bild(ern)** → Informationen direkt aus dem Bild extrahieren, ggf. MCP/JIRA ergänzend abrufen.
 
 ### Ablauf
-1. Excel aus `data/` einlesen, Standard-Filter anwenden
-2. JIRA-Tickets per MCP abrufen falls INTAI-ID vorhanden
+1. My Action Required per MCP abrufen (WoCCo-Filter), ggf. zusätzliche Cases je nach Angabe
+2. JIRA-Tickets per MCP abrufen falls INTAI-ID im Namen vorhanden
 3. Jeden Case vollständig analysieren → KBV-Kategorie S / M / L bestimmen
-4. `kbv_kategorisierung_proto.html` vollständig neu schreiben
+4. Alte `mista_*.html` löschen (Bash: `rm mista_*.html`), dann neue `mista_DDMMYYYY.html` mit heutigem Datum erstellen
 
 ---
 

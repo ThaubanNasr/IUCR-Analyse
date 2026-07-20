@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MISTA – KBV Kategorisierung 20.07.2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; background: #f1f4f8; color: #1a1a2e; }
+
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-left h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .header-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-total { background: rgba(255,255,255,0.15); }
+  .badge-s { background: #22c55e; }
+  .badge-m { background: #f59e0b; }
+  .badge-l { background: #ef4444; }
+  .search-box input {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: none;
+    font-size: 13px;
+    width: 220px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    outline: none;
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,0.6); }
+  .search-box input:focus { background: rgba(255,255,255,0.25); }
+
+  .section-title {
+    padding: 18px 24px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+  }
+
+  .cases-list { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 8px; }
+
+  .case-card { background: white; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; transition: box-shadow 0.2s; }
+  .case-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
+  .case-card.hidden { display: none; }
+
+  .case-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .cat-badge {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .cat-s { background: #22c55e; }
+  .cat-m { background: #f59e0b; }
+  .cat-l { background: #ef4444; }
+
+  .case-header-info { flex: 1; min-width: 0; }
+  .case-title { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .case-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; align-items: center; }
+  .case-id { font-size: 12px; color: #64748b; font-family: monospace; }
+  .jira-link { font-size: 12px; color: #3b82f6; text-decoration: none; font-weight: 600; }
+  .jira-link:hover { text-decoration: underline; }
+  .meta-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f1f5f9; color: #475569; }
+  .wocco-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .wocco-waiting { background: #fef3c7; color: #92400e; }
+  .wocco-input { background: #fee2e2; color: #991b1b; }
+  .chevron { font-size: 12px; color: #94a3b8; transition: transform 0.2s; flex-shrink: 0; }
+  .case-card.open .chevron { transform: rotate(90deg); }
+
+  .case-body { display: none; padding: 0 18px 18px; }
+  .case-card.open .case-body { display: block; }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 700px) { .detail-grid { grid-template-columns: 1fr; } }
+
+  .detail-card { border-radius: 8px; padding: 14px; }
+  .detail-card-blue { border: 1.5px solid #3b82f6; background: #eff6ff; }
+  .detail-card-purple { border: 1.5px solid #8b5cf6; background: #f5f3ff; }
+  .detail-card h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .detail-card-blue h4 { color: #1d4ed8; }
+  .detail-card-purple h4 { color: #6d28d9; }
+  .detail-card ul { padding-left: 16px; }
+  .detail-card li { margin-bottom: 4px; font-size: 13px; line-height: 1.5; }
+
+  .mitigation-block { margin-bottom: 16px; }
+  .mitigation-block h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #475569; margin-bottom: 10px; }
+  .mitigation-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mitigation-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 700px) { .mitigation-grid-2, .mitigation-grid-3 { grid-template-columns: 1fr; } }
+  .mitigation-card { background: #f8fafc; border-radius: 8px; padding: 12px; border: 1px solid #e2e8f0; }
+  .mitigation-card h5 { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+  .mitigation-card ul { padding-left: 14px; }
+  .mitigation-card li { font-size: 12px; color: #475569; margin-bottom: 3px; line-height: 1.4; }
+
+  .gutachten-toggle {
+    background: #1a1a2e;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  .gutachten-toggle:hover { background: #16213e; }
+  .gutachten-body { display: none; background: #f8fafc; border-radius: 8px; padding: 14px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; border: 1px solid #e2e8f0; }
+  .gutachten-body.open { display: block; }
+
+  .fazit-s { background: #dcfce7; border-left: 4px solid #22c55e; padding: 10px 14px; border-radius: 4px; margin-top: 10px; color: #166534; font-weight: 600; }
+  .fazit-m { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 4px; margin-top: 10px; color: #92400e; font-weight: 600; }
+  .fazit-l { background: #fee2e2; border-left: 4px solid #ef4444; padding: 10px 14px; border-radius: 4px; margin-top: 10px; color: #991b1b; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>MISTA – KBV Kategorisierung 20.07.2026</h1>
+    <div class="header-badges">
+      <span class="badge badge-total">4 Cases</span>
+      <span class="badge badge-s">S: 1</span>
+      <span class="badge badge-m">M: 2</span>
+      <span class="badge badge-l">L: 1</span>
+    </div>
+  </div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Suche nach Titel, Case-ID, JIRA-ID…" oninput="filterCases()">
+  </div>
+</div>
+
+<div class="section-title">⚡ My Action Required</div>
+<div class="cases-list" id="casesList">
+
+  <!-- IRPA-R2570 / INTAI-2777 — Kategorie M -->
+  <div class="case-card" data-search="irpa-r2570 intai-2777 opportunity-to-order quote creation joule">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="cat-badge cat-m">M</div>
+      <div class="case-header-info">
+        <div class="case-title">Opportunity-to-Order: Prerequisite Validation + Quote Creation via Joule</div>
+        <div class="case-meta">
+          <span class="case-id">IRPA-R2570</span>
+          <a class="jira-link" href="https://jira.tools.sap/browse/INTAI-2777" target="_blank" onclick="event.stopPropagation()">INTAI-2777</a>
+          <span class="meta-tag">Artificial Intelligence</span>
+          <span class="meta-tag">SP4</span>
+          <span class="meta-tag">Office of the CEO</span>
+          <span class="wocco-tag wocco-input">Input Required</span>
+        </div>
+      </div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="case-body">
+      <div class="detail-grid">
+        <div class="detail-card detail-card-blue">
+          <h4>Personenbezogene Daten</h4>
+          <ul>
+            <li>Opportunity-Daten von ~6.000 Account Executives (ACV, Forecast, Kontakte)</li>
+            <li>Kundendaten aus Sales Cloud v2 (Opportunity ID, Kundenname, Kontaktpersonen)</li>
+            <li>Close Plan-Aktivitäten und Qualifikationsdaten der AEs</li>
+            <li>Kein direkter Zugriff auf externe Kundenpersonaldaten</li>
+          </ul>
+        </div>
+        <div class="detail-card detail-card-purple">
+          <h4>Auswirkungen auf Mitarbeitende</h4>
+          <ul>
+            <li>KI validiert Pflichtfelder und führt AEs durch den Prozess — mittlere Eingriffstiefe</li>
+            <li>Keine vollständige Aufgabenübernahme: AE bestätigt Quote-Erstellung explizit</li>
+            <li>Indirekte Verhaltenssteuerung durch Durchsetzung von Prerequisite-Regeln</li>
+            <li>~6.000 AEs global betroffen</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mitigation-block">
+        <h4>Mitigationsmaßnahmen</h4>
+        <div class="mitigation-grid-3">
+          <div class="mitigation-card">
+            <h5>Bereits geplant</h5>
+            <ul>
+              <li>Human-in-the-Loop: AE bestätigt vor Quote-Erstellung</li>
+              <li>Audit Trail in Joule-Gesprächshistorie</li>
+              <li>Zugangskontrolle über Sales Cloud v2</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Empfohlen zusätzlich</h5>
+            <ul>
+              <li>Disclaimer bei Joule-Nutzung (KI-generierte Validierung)</li>
+              <li>Nutzungsausschluss: Keine automatische Quote ohne AE-Freigabe</li>
+              <li>Transparenz über eingesetzte KI-Komponenten für AEs</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Mögliche Mitigation zu S</h5>
+            <ul>
+              <li>Reduktion auf reine Informationsanzeige ohne Aktionsausführung</li>
+              <li>Keine Verarbeitung personenbezogener AE-Aktivitätsdaten (Close Plan)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <button class="gutachten-toggle" onclick="toggleGutachten(this)">Gutachten anzeigen</button>
+      <div class="gutachten-body">Kategorisierung: Kategorie M
+Der KI-Anwendungsfall "Opportunity-to-Order: Prerequisite Validation + Quote Creation via Joule" fällt in Kategorie M basierend auf folgender Analyse:
+
+Begründung der Kategorisierung
+
+1. Verarbeitung personenbezogener Daten
+Personenbezogene Mitarbeiterdaten im Arbeitsprozess:
+- Die Lösung verarbeitet strukturierte Opportunity-Daten von ~6.000 Account Executives, darunter ACV-Werte, Forecast-Kategorien, Qualifikationsscores und Close Plan-Aktivitäten.
+- Kontaktpersonen aus Sales Cloud v2 werden als Pflichtfeld geprüft und verarbeitet.
+- Obwohl primär Kundendaten verarbeitet werden, sind AE-spezifische Aktivitätsmuster (Close Plan Completeness, Qualification Score) mittelbare personenbezogene Arbeitsprozessdaten.
+
+2. Auswirkungen auf Arbeitsprozesse
+Mittlere Eingriffstiefe mit konversationeller Führung:
+- Die KI übernimmt die Validierung von 6-8 Pflichtfeldern und führt den AE durch Korrekturen — dies beeinflusst den Arbeitsprozess direkt.
+- Eine vollständige Aufgabenübernahme findet nicht statt: die Quote-Erstellung erfolgt erst nach expliziter AE-Bestätigung.
+- Indirekte Verhaltenssteuerung durch automatisierte Regelanwendung (Qualification Score, SI Selection Threshold).
+
+Erforderliche Mitigationsmaßnahmen
+
+Folgende Mitigationsmaßnahmen sollten implementiert werden:
+
+1. Bereits geplante/implementierte Maßnahmen:
+Human-in-the-Loop: AE bestätigt explizit vor jeder Quote-Erstellung
+Audit Trail: Joule-Gesprächshistorie dokumentiert alle Interaktionen
+Zugangskontrolle: Über bestehende Sales Cloud v2-Berechtigungen
+
+2. Empfohlene zusätzliche Mitigationsmaßnahmen:
+Disclaimer: Klarer Hinweis auf KI-gestützte Validierung in der Joule-Oberfläche
+Nutzungsausschluss: Explizite Dokumentation, dass keine automatische Quote ohne AE-Freigabe erstellt wird
+Transparenz: Information der AEs über eingesetzte KI-Komponenten und deren Datengrundlage
+
+3. Mögliche Mitigation zur Kategorie S:
+Der Anwendungsfall könnte in Kategorie S eingeordnet werden, wenn:
+- Die Close Plan-Aktivitäten und Qualification Scores nicht verarbeitet werden
+- Die Funktion auf reine Informationsanzeige (keine Aktionsausführung) reduziert wird
+
+<div class="fazit-m">Fazit: Kategorie M — Personenbezogene AE-Aktivitätsdaten im Prozess, mittlere Eingriffstiefe, keine vollständige Aufgabenübernahme. Disclaimer und Nutzungsausschluss erforderlich.</div></div>
+    </div>
+  </div>
+
+  <!-- IRPA-R2388 / INTAI-2275 — Kategorie S -->
+  <div class="case-card" data-search="irpa-r2388 intai-2275 ambi adoption metrics benchmarking insights ai readouts">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="cat-badge cat-s">S</div>
+      <div class="case-header-info">
+        <div class="case-title">AMBI – Adoption Metrics & Benchmarking Insights: AI Readouts</div>
+        <div class="case-meta">
+          <span class="case-id">IRPA-R2388</span>
+          <a class="jira-link" href="https://jira.tools.sap/browse/INTAI-2275" target="_blank" onclick="event.stopPropagation()">INTAI-2275</a>
+          <span class="meta-tag">Artificial Intelligence</span>
+          <span class="meta-tag">SP1</span>
+          <span class="meta-tag">Office of the CEO</span>
+          <span class="wocco-tag wocco-waiting">Waiting for WoCCo Feedback</span>
+        </div>
+      </div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="case-body">
+      <div class="detail-grid">
+        <div class="detail-card detail-card-blue">
+          <h4>Personenbezogene Daten</h4>
+          <ul>
+            <li>Anonymisierte Kunden-Adoption-Telemetrie — keine direkten Mitarbeiterpersonaldaten</li>
+            <li>Aggregierte Daten auf Kunden-, Industrie- und Geografie-Ebene</li>
+            <li>Interne SAP-Nutzer (CSMs, PMs): nur Rollenidentifikation, keine sensiblen Personaldaten</li>
+            <li>Ausgabe als PowerPoint — kein direkter Systemzugriff auf Personaldaten</li>
+          </ul>
+        </div>
+        <div class="detail-card detail-card-purple">
+          <h4>Auswirkungen auf Mitarbeitende</h4>
+          <ul>
+            <li>Unterstützende Funktion: KI generiert Insights, CSMs/PMs entscheiden selbst</li>
+            <li>Keine Leistungs- oder Verhaltenskontrolle einzelner Mitarbeitender</li>
+            <li>Aggregierte Kunden-Adoption-Daten — kein Bezug zu individuellen Arbeitnehmerleistungen</li>
+            <li>~675 interne Nutzer als Informationsempfänger</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mitigation-block">
+        <h4>Mitigationsmaßnahmen</h4>
+        <div class="mitigation-grid-2">
+          <div class="mitigation-card">
+            <h5>Bereits geplant</h5>
+            <ul>
+              <li>Anonymisierte Eingangsdaten (keine Kundenpersonaldaten)</li>
+              <li>Verarbeitung über SAP AI Core APIs</li>
+              <li>Ausgabe als PowerPoint — kein Direktzugriff</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Empfohlen zusätzlich</h5>
+            <ul>
+              <li>Disclaimer in PowerPoint: KI-generierte Insights, menschliche Prüfung empfohlen</li>
+              <li>Enablement für CSMs: Umgang mit KI-generierten Empfehlungen</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <button class="gutachten-toggle" onclick="toggleGutachten(this)">Gutachten anzeigen</button>
+      <div class="gutachten-body">Kategorisierung: Kategorie S
+Der KI-Anwendungsfall "AMBI – Adoption Metrics & Benchmarking Insights: AI Readouts" fällt in Kategorie S basierend auf folgender Analyse:
+
+Begründung der Kategorisierung
+
+1. Verarbeitung personenbezogener Daten
+Keine personenbezogenen Mitarbeiterdaten im Kernprozess:
+- Die Lösung verarbeitet ausschließlich anonymisierte Kunden-Adoption-Telemetrie.
+- Daten werden auf Kunden-, Industrie- und Geografie-Ebene aggregiert — kein Personenbezug zu SAP-Mitarbeitenden.
+- Interne Nutzer (CSMs, PMs, Executives) sind Informationsempfänger, nicht Gegenstand der KI-Analyse.
+
+2. Auswirkungen auf Arbeitsprozesse
+Geringe Eingriffstiefe — unterstützende Funktion:
+- Die KI liefert strukturierte Adoption-Insights als PowerPoint-Asset; Entscheidungen treffen CSMs und PMs selbst.
+- Keine automatisierte Aktionsausführung, keine Steuerung von Mitarbeitendenverhalten.
+- Keine Möglichkeit zur Leistungs- oder Verhaltenskontrolle einzelner Mitarbeitender.
+
+Erforderliche Mitigationsmaßnahmen
+
+Folgende Mitigationsmaßnahmen sollten implementiert werden:
+
+1. Bereits geplante/implementierte Maßnahmen:
+Anonymisierung: Eingangsdaten enthalten keine Kundenpersonaldaten
+SAP AI Core: Verarbeitung innerhalb sicherer SAP-Infrastruktur
+PowerPoint-Output: Kein direkter Systemzugriff, menschliche Zwischenschicht
+
+2. Empfohlene zusätzliche Mitigationsmaßnahmen:
+Disclaimer: Hinweis in den PowerPoint-Outputs, dass Insights KI-generiert sind und menschlicher Prüfung bedürfen
+Enablement: Schulung der CSMs im Umgang mit KI-generierten Empfehlungen
+
+<div class="fazit-s">Fazit: Kategorie S — Keine personenbezogenen Mitarbeiterdaten, rein unterstützende Funktion, geringe Eingriffstiefe. Disclaimer ausreichend.</div></div>
+    </div>
+  </div>
+
+  <!-- IRPA-R2228 / INTAI-1723 — Kategorie M -->
+  <div class="case-card" data-search="irpa-r2228 intai-1723 c&p agentic ai planning execution monitoring agent maxaid maxbrain qbr">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="cat-badge cat-m">M</div>
+      <div class="case-header-info">
+        <div class="case-title">C&P Agentic AI – Planning and Execution Monitoring Agent (MaxAId / MaxBrain)</div>
+        <div class="case-meta">
+          <span class="case-id">IRPA-R2228</span>
+          <a class="jira-link" href="https://jira.tools.sap/browse/INTAI-1723" target="_blank" onclick="event.stopPropagation()">INTAI-1723</a>
+          <span class="meta-tag">Artificial Intelligence</span>
+          <span class="meta-tag">SP1</span>
+          <span class="meta-tag">Office of the CEO</span>
+          <span class="wocco-tag wocco-waiting">Waiting for WoCCo Feedback</span>
+        </div>
+      </div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="case-body">
+      <div class="detail-grid">
+        <div class="detail-card detail-card-blue">
+          <h4>Personenbezogene Daten</h4>
+          <ul>
+            <li>Workload-Daten und Kapazitätsauslastung von TQMs und PPMs (~2.300 Nutzer)</li>
+            <li>Historische Nutzungsdaten aus ISD Hub, Datasphere, ONE360, SSC</li>
+            <li>MaxBrain: individuelle Kapazitätsmuster und Risikoeinschätzungen pro Person</li>
+            <li>Serviceplandaten mit personenbezogenem Workload-Bezug</li>
+          </ul>
+        </div>
+        <div class="detail-card detail-card-purple">
+          <h4>Auswirkungen auf Mitarbeitende</h4>
+          <ul>
+            <li>MaxBrain erstellt persona-spezifische Servicepläne — direkte Auswirkung auf Arbeitsplanung</li>
+            <li>Analyse von Workload, Kapazität und Risikofaktoren pro Mitarbeitendem</li>
+            <li>96% Zeitersparnis bei Serviceplan-Erstellung — potenziell starke Verhaltenssteuerung</li>
+            <li>Keine vollständige autonome Ausführung — menschliche Freigabe vorgesehen</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mitigation-block">
+        <h4>Mitigationsmaßnahmen</h4>
+        <div class="mitigation-grid-3">
+          <div class="mitigation-card">
+            <h5>Bereits geplant</h5>
+            <ul>
+              <li>Change Management und Schulungsprogramme</li>
+              <li>Ausrichtung an bestehenden Geschäftsprozessen</li>
+              <li>CPIT Enterprise AI CoE-Oversight</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Empfohlen zusätzlich</h5>
+            <ul>
+              <li>Nutzungsausschluss: KI-Servicepläne dürfen nicht zur Leistungsbewertung herangezogen werden</li>
+              <li>Disclaimer bei KI-generierten Planvorschlägen</li>
+              <li>Transparenz über Datenquellen für betroffene TQMs/PPMs</li>
+              <li>DPIA prüfen (Workload-Analyse ~2.300 Personen)</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Mögliche Mitigation zu S</h5>
+            <ul>
+              <li>Verzicht auf individuelle Workload-Analyse (nur aggregierte Team-Daten)</li>
+              <li>MaxBrain ohne personenbezogenen Kapazitätsbezug</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <button class="gutachten-toggle" onclick="toggleGutachten(this)">Gutachten anzeigen</button>
+      <div class="gutachten-body">Kategorisierung: Kategorie M
+Der KI-Anwendungsfall "C&P Agentic AI – Planning and Execution Monitoring Agent" fällt in Kategorie M basierend auf folgender Analyse:
+
+Begründung der Kategorisierung
+
+1. Verarbeitung personenbezogener Daten
+Personenbezogene Mitarbeiterdaten im Arbeitsprozess:
+- MaxBrain verarbeitet individuelle Workload-Verteilungen, Kapazitätsgrenzen und Risikoeinschätzungen von ~2.300 TQMs und PPMs.
+- Historische Nutzungsdaten aus mehreren Systemen (ISD Hub, Datasphere, WorkZone, ONE360, SSC) ermöglichen detaillierte Aussagen über individuelle Arbeitsleistung.
+- Die persona-spezifische Serviceplanerstellung impliziert direkten Personenbezug.
+
+2. Auswirkungen auf Arbeitsprozesse
+Mittlere bis erhebliche Eingriffstiefe durch Arbeitsplanung:
+- MaxBrain generiert individuelle Servicepläne basierend auf Kapazitäts- und Risikoanalysen — dies greift direkt in die Arbeitszuteilung ein.
+- 96% Zeitersparnis bei Serviceplan-Erstellung beschreibt eine weitgehende Automatisierung eines zuvor manuellen Prozesses.
+- Keine vollständige Aufgabenübernahme: QBR-Decks und Pläne werden durch Menschen freigegeben.
+
+Erforderliche Mitigationsmaßnahmen
+
+Folgende Mitigationsmaßnahmen sollten implementiert werden:
+
+1. Bereits geplante/implementierte Maßnahmen:
+Change Management: Schulungsprogramme und Adoptionsbegleitung vorgesehen
+Prozessausrichtung: Aufbau auf bestehenden manuellen Workflows
+CPIT CoE-Oversight: Koordination durch Enterprise AI CoE
+
+2. Empfohlene zusätzliche Mitigationsmaßnahmen:
+Nutzungsausschluss: Explizites Verbot, KI-generierte Servicepläne zur Leistungsbeurteilung zu verwenden
+Disclaimer: Klarer Hinweis auf KI-Unterstützung in allen generierten Dokumenten
+Transparenz: Betroffene TQMs/PPMs über eingesetzte Datenquellen informieren
+DPIA: Datenschutz-Folgenabschätzung empfohlen aufgrund Workload-Analyse von ~2.300 Personen
+
+3. Mögliche Mitigation zur Kategorie S:
+Der Anwendungsfall könnte in Kategorie S eingeordnet werden, wenn:
+- MaxBrain ausschließlich aggregierte Team-Kapazitäten verarbeitet (kein Personenbezug)
+- Die individuelle Workload-Analyse vollständig entfällt
+
+<div class="fazit-m">Fazit: Kategorie M — Individuelle Workload- und Kapazitätsdaten von ~2.300 Mitarbeitenden, mittlere bis erhebliche Eingriffstiefe in Arbeitsplanung. Nutzungsausschluss und DPIA-Prüfung erforderlich.</div></div>
+    </div>
+  </div>
+
+  <!-- IRPA-R425 — Contract X-Ray — Kategorie L -->
+  <div class="case-card" data-search="irpa-r425 contract x-ray vertragsanalyse ki">
+    <div class="case-header" onclick="toggleCase(this)">
+      <div class="cat-badge cat-l">L</div>
+      <div class="case-header-info">
+        <div class="case-title">Contract X-Ray</div>
+        <div class="case-meta">
+          <span class="case-id">IRPA-R425</span>
+          <span class="meta-tag">Artificial Intelligence</span>
+          <span class="meta-tag">Office of the CEO</span>
+          <span class="wocco-tag wocco-waiting">Waiting for WoCCo Feedback</span>
+        </div>
+      </div>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="case-body">
+      <div class="detail-grid">
+        <div class="detail-card detail-card-blue">
+          <h4>Personenbezogene Daten</h4>
+          <ul>
+            <li>Vertragsdaten mit potenziellen Personenbezügen (Vertragsparteien, Kontaktpersonen)</li>
+            <li>Interne und externe Vertragsparteien als natürliche Personen möglich</li>
+            <li>Weitreichende Dokumentenanalyse über KI — Scope der Datenverarbeitung unklar ohne vollständige Beschreibung</li>
+            <li>Keine detaillierte Datenbeschreibung im IUCR verfügbar</li>
+          </ul>
+        </div>
+        <div class="detail-card detail-card-purple">
+          <h4>Auswirkungen auf Mitarbeitende</h4>
+          <ul>
+            <li>KI analysiert Verträge und liefert Bewertungen — potenziell weitreichende Entscheidungsgrundlage</li>
+            <li>Bei Arbeitsverträgen/HR-Verträgen: direkte Auswirkung auf Mitarbeitende möglich</li>
+            <li>Scope der Vertragstypen unklar — Risikoeinstufung konservativ</li>
+            <li>Entscheidungsunterstützung mit hohem Gewicht für nachgelagerte Prozesse</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mitigation-block">
+        <h4>Mitigationsmaßnahmen</h4>
+        <div class="mitigation-grid-3">
+          <div class="mitigation-card">
+            <h5>Bereits geplant</h5>
+            <ul>
+              <li>Keine detaillierten Mitigationsmaßnahmen im IUCR dokumentiert</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Empfohlen zusätzlich</h5>
+            <ul>
+              <li>Klärung: Welche Vertragstypen werden analysiert?</li>
+              <li>DPIA bei Verarbeitung personenbezogener Vertragsdaten</li>
+              <li>Nutzungsausschluss: KI-Analyse nicht als alleinige Entscheidungsgrundlage</li>
+              <li>Disclaimer in allen KI-generierten Analysen</li>
+              <li>Human-in-the-Loop für alle Entscheidungen</li>
+            </ul>
+          </div>
+          <div class="mitigation-card">
+            <h5>Mögliche Mitigation zu M/S</h5>
+            <ul>
+              <li>Expliziter Ausschluss von Arbeits- und HR-Verträgen</li>
+              <li>Reduktion auf reine Extraktion ohne Bewertung/Empfehlung</li>
+              <li>Vollständige Anonymisierung vor KI-Verarbeitung</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <button class="gutachten-toggle" onclick="toggleGutachten(this)">Gutachten anzeigen</button>
+      <div class="gutachten-body">Kategorisierung: Kategorie L
+Der KI-Anwendungsfall "Contract X-Ray" fällt in Kategorie L basierend auf folgender Analyse:
+
+Begründung der Kategorisierung
+
+1. Verarbeitung personenbezogener Daten
+Weitreichende Dokumentenanalyse mit unklarem Personenbezug:
+- Verträge enthalten regelmäßig personenbezogene Daten natürlicher Personen als Vertragsparteien.
+- Der Scope der analysierten Vertragstypen ist im IUCR nicht vollständig dokumentiert — bei Einschluss von Arbeits- oder HR-Verträgen besteht direkter Personenbezug zu Mitarbeitenden.
+- Weitreichende KI-gestützte Dokumentenanalyse verarbeitet potenziell sensible Vertragsinhalte.
+
+2. Auswirkungen auf Arbeitsprozesse
+Hohe Eingriffstiefe durch KI-gestützte Vertragsbewertung:
+- KI-Analysen von Verträgen dienen als Entscheidungsgrundlage in nachgelagerten Prozessen — hohes Gewicht für betroffene Parteien.
+- Fehlende Beschreibung der Mitigationsmaßnahmen im IUCR erhöht das Risiko.
+- Bei Arbeitsverträgen wäre direkte Auswirkung auf individuelle Mitarbeitende möglich.
+- Konservative Einstufung L aufgrund unvollständiger Dokumentation und potenziell hoher Eingriffstiefe.
+
+Erforderliche Mitigationsmaßnahmen
+
+Folgende Mitigationsmaßnahmen sollten implementiert werden:
+
+1. Bereits geplante/implementierte Maßnahmen:
+Keine detaillierten Mitigationsmaßnahmen im IUCR dokumentiert — Klärungsbedarf.
+
+2. Empfohlene zusätzliche Mitigationsmaßnahmen:
+Scope-Klärung: Explizite Dokumentation welche Vertragstypen analysiert werden
+DPIA: Datenschutz-Folgenabschätzung bei Verarbeitung personenbezogener Vertragsdaten
+Nutzungsausschluss: KI-Analyse nicht als alleinige Entscheidungsgrundlage verwendbar
+Disclaimer: In allen KI-generierten Vertragsanalysen
+Human-in-the-Loop: Pflicht zur menschlichen Prüfung aller Analysen vor Entscheidung
+
+3. Mögliche Mitigation zur Kategorie M/S:
+Der Anwendungsfall könnte niedriger eingestuft werden, wenn:
+- Arbeits- und HR-Verträge explizit ausgeschlossen werden
+- Die Funktion auf reine Extraktion ohne Bewertung/Empfehlung reduziert wird
+- Vollständige Anonymisierung vor KI-Verarbeitung sichergestellt ist
+
+<div class="fazit-l">Fazit: Kategorie L — Weitreichende Vertragsanalyse mit unklarem Personenbezug, fehlende Mitigation dokumentiert, hohe potenzielle Eingriffstiefe. Dringende Klärung von Scope und Mitigationsmaßnahmen erforderlich.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleCase(header) {
+  header.parentElement.classList.toggle('open');
+}
+function toggleGutachten(btn) {
+  const body = btn.nextElementSibling;
+  body.classList.toggle('open');
+  btn.textContent = body.classList.contains('open') ? 'Gutachten ausblenden' : 'Gutachten anzeigen';
+}
+function filterCases() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.case-card').forEach(card => {
+    const text = (card.dataset.search || '') + card.innerText.toLowerCase();
+    card.classList.toggle('hidden', q.length > 0 && !text.includes(q));
+  });
+}
+</script>
+</body>
+</html>

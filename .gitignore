@@ -3,4 +3,8 @@ __pycache__/
 *.pyc
 .mcp.json
 data/*.xlsx
+data/*.json
+filtered_cases.json
+node_modules/
+package-lock.json
 
