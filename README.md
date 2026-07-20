@@ -80,12 +80,6 @@ Einfach natürlich formulieren:
 
 ---
 
-## Einzelticket-Analyse
-
-JIRA-Nummer in den Chat schreiben (z.B. `INTAI-1688`) → vollständige KBV-Prüfung + E-Mail-Entwurf, kein HTML.
-
----
-
 ## Hinweise
 
 - HTML-Datei ist vollständig offline nutzbar — kein Server nötig
