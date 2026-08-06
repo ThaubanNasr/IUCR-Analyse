@@ -60,7 +60,7 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 4. MISTA-Datei speichern:
    - **Dateiname:** `mista_TT-MM-JJJJ.html` (z. B. `mista_06-08-2026.html`)
    - **Zielpfad:** `C:\Users\I777951\OneDrive - SAP SE\IT Works Council Collaboration (IT WoCCo)-Internal - IT WoCCo - Documents\2026_AI_Cases\AI Review Mista\`
-   - Falls Zielpfad nicht existiert → Fallback: Projektverzeichnis
+   - Falls Zielpfad nicht existiert → Fallback: Projektverzeichnis `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse\`
    - Datei des **gleichen Tages** überschreiben — Dateien anderer Tage **niemals** anfassen
    - **Niemals** Dateien löschen (`rm` ist verboten)
 
