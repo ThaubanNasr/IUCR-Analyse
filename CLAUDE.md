@@ -30,16 +30,14 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 ### Datenquelle — automatisch wählen
 
 - **MCP verfügbar (bevorzugt):** IUCR per `mcp__iucr-mcp-prod__query` abrufen. Standard-Filter:
-  - `STATUS = 'In Development'`
-  - `SOLUTION_TYPE in ('Artificial Intelligence', 'Joule Studio Agent')`
-  - `SERVICE_PACKAGE in ('1 - Do It Yourself (Citizen Development)', '2 - Operations Package', '3 - Development & Operations Package', '4 - PoC, Development & Ops (Full Service Package)')`
   - Sortierung: `LIFECYCLE__CREATED_DATE desc`
-- **Fallback (kein MCP):** Neueste `*.xlsx` aus `data/`, Sheet „SAPUI5 Export", gleiche Filter.
+  - **Kein** STATUS-, SOLUTION_TYPE- oder SERVICE_PACKAGE-Filter für My Action Required
+- **Fallback (kein MCP):** Neueste `*.xlsx` aus `data/`, Sheet „SAPUI5 Export", nur WoCCo-Filter.
 
 ### Standard-MISTA — Modi
 
 **Standard (ohne weitere Angabe):**
-- Nur „My Action Required": Standard-Filter + `APR__WOCCO__STATUS in ('Waiting for WoCCo Feedback', 'Input Required')`
+- Nur „My Action Required": Einziger Filter: `APR__WOCCO__STATUS in ('Waiting for WoCCo Feedback', 'Input Required')`
 - Kein zweiter Abschnitt
 
 **Mit Anzahl (z.B. „5 neueste" oder „10 neueste"):**
