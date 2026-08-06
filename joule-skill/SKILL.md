@@ -1,21 +1,17 @@
 ---
-name: MISTA — KBV-Kategorisierung
-description: >
-  Erstellt eine MISTA-Analyse (KBV-Kategorisierung S/M/L) für IUCR AI-Cases.
-  Aktiviert bei: "erstell eine MISTA", "my action required", "KBV-Analyse",
-  "kategorisiere Cases", "neue Cases analysieren", "MISTA erstellen".
-allowed-tools:
-  - write_file
-  - read_file
-  - run_python
-required_mcp_servers: "*.hana.ondemand.com/mcp/iucr *.jira.tools.sap/mcp"
+name: mista-kbv-kategorisierung
+description: >-
+  Erstellt eine MISTA-Analyse (KBV-Kategorisierung S/M/L) für IUCR AI-Cases. Aktiviert bei: "erstell eine MISTA", "my action required", "KBV-Analyse", "kategorisiere Cases", "neue Cases analysieren", "MISTA erstellen".
+allowed-tools: write_file read_file execute
 ---
 
 # MISTA — KBV-Kategorisierungsanalyse
 
 ## Ziel
 Erstelle eine vollständige KBV-Kategorisierungsanalyse als HTML-Datei `mista_DDMMYYYY.html`
-im Working Directory (heutiges Datum im Dateinamen, z. B. `mista_06082026.html`).
+im Ordner `Documents/MISTA/` relativ zum Working Directory (heutiges Datum im Dateinamen, z. B. `mista_06082026.html`).
+
+Die Datei landet **immer** unter `Documents/MISTA/` — unabhängig davon, welches Working Directory aktiv ist.
 
 ---
 
@@ -101,6 +97,23 @@ Fazit
 
 HTML-Struktur gemäß `references/html_template.md` verwenden.
 
-Alte `mista_*.html`-Dateien im Working Directory vorher löschen.
+### Zielordner vorbereiten
 
-Datei per `write_file` ins Working Directory schreiben → erscheint als Artifact-Chip im Chat.
+1. **Ordner anlegen** (falls nicht vorhanden) — via `execute`:
+   ```python
+   import os; os.makedirs("Documents/MISTA", exist_ok=True)
+   ```
+2. **Alte Dateien löschen** — alle `mista_*.html` in `Documents/MISTA/` vorher entfernen via `execute`:
+   ```python
+   import os, glob
+   for f in glob.glob("Documents/MISTA/mista_*.html"): os.remove(f)
+   ```
+
+### Datei schreiben
+
+Datei per `write_file` unter dem Pfad `Documents/MISTA/mista_DDMMYYYY.html` speichern
+→ erscheint als Artifact-Chip im Chat.
+
+**Hinweis:** Der Pfad `Documents/MISTA/` ist relativ zum aktiven Working Directory.
+Solange das Working Directory auf `OneDrive - SAP SE/` (oder einen vergleichbaren Stammordner) zeigt,
+landet die Datei immer an der richtigen Stelle — ohne manuelle Anpassung.
