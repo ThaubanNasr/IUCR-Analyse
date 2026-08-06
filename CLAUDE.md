@@ -25,7 +25,7 @@ Bei allen JQL-Abfragen:
 
 ## Cases analysieren / MISTA erstellen
 
-Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schlüsselwort — die KBV-Kategorisierungs-Analyse durchführen und `mista_DDMMYYYY.html` erstellen. Bei Unklarheit kurz nachfragen.
+Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schlüsselwort — die KBV-Kategorisierungs-Analyse durchführen und `mista_TT-MM-JJJJ.html` erstellen. Bei Unklarheit kurz nachfragen.
 
 ### Datenquelle — automatisch wählen
 
@@ -57,7 +57,12 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 1. My Action Required per MCP abrufen (WoCCo-Filter), ggf. zusätzliche Cases je nach Angabe
 2. JIRA-Tickets per MCP abrufen falls INTAI-ID im Namen vorhanden
 3. Jeden Case vollständig analysieren → KBV-Kategorie S / M / L bestimmen
-4. Alte `mista_*.html` löschen (Bash: `rm mista_*.html`), dann neue `mista_DDMMYYYY.html` mit heutigem Datum erstellen
+4. MISTA-Datei speichern:
+   - **Dateiname:** `mista_TT-MM-JJJJ.html` (z. B. `mista_06-08-2026.html`)
+   - **Zielpfad:** `C:\Users\I777951\OneDrive - SAP SE\IT Works Council Collaboration (IT WoCCo)-Internal - IT WoCCo - Documents\2026_AI_Cases\AI Review Mista\`
+   - Falls Zielpfad nicht existiert → Fallback: Projektverzeichnis
+   - Datei des **gleichen Tages** überschreiben — Dateien anderer Tage **niemals** anfassen
+   - **Niemals** Dateien löschen (`rm` ist verboten)
 
 ---
 
