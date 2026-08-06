@@ -37,7 +37,7 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 ### Standard-MISTA — Modi
 
 **Standard (ohne weitere Angabe):**
-- Nur „My Action Required": Einziger Filter: `APR__WOCCO__STATUS in ('Waiting for WoCCo Feedback', 'Input Required')`
+- Nur „My Action Required": Einziger Filter: `APR__WOCCO__STATUS = 'Waiting for WoCCo Feedback'`
 - Kein zweiter Abschnitt
 
 **Mit Anzahl (z.B. „5 neueste" oder „10 neueste"):**

@@ -18,7 +18,7 @@ Die Datei landet **immer** unter `Documents/MISTA/` — unabhängig davon, welch
 ## Schritt 1 — Modus bestimmen
 
 **Standard (keine weiteren Angaben):**
-- Nur „My Action Required": Filter `APR__WOCCO__STATUS in ('Waiting for WoCCo Feedback', 'Input Required')`
+- Nur „My Action Required": Filter `APR__WOCCO__STATUS = 'Waiting for WoCCo Feedback'`
 - Sortierung: `LIFECYCLE__CREATED_DATE desc`
 - Kein zweiter Abschnitt
 
