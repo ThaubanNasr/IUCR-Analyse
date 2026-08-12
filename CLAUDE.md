@@ -54,10 +54,11 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 - **Mit Bild(ern)** → Informationen direkt aus dem Bild extrahieren, ggf. MCP/JIRA ergänzend abrufen.
 
 ### Ablauf
-1. My Action Required per MCP abrufen (WoCCo-Filter), ggf. zusätzliche Cases je nach Angabe
-2. JIRA-Tickets per MCP abrufen falls INTAI-ID im Namen vorhanden
-3. Jeden Case vollständig analysieren → KBV-Kategorie S / M / L bestimmen
-4. MISTA-Datei speichern:
+1. My Action Required per MCP abrufen (WoCCo-Filter via `mcp__iucr-mcp-prod__query`), ggf. zusätzliche Cases je nach Angabe
+2. **Für jeden Case `getUseCaseById` aufrufen** — liefert vollständige Felder (Description, Business Value, Other Process, Labels, Using UiPath etc.). Die Query-Ergebnisse sind teils abgeschnitten und unvollständig.
+3. JIRA-Tickets per MCP abrufen falls INTAI-ID im Namen vorhanden
+4. Jeden Case vollständig analysieren → KBV-Kategorie S / M / L bestimmen
+5. MISTA-Datei speichern:
    - **Dateiname:** `mista_TT-MM-JJJJ.html` (z. B. `mista_06-08-2026.html`)
    - **Zielpfad:** `C:\Users\I777951\OneDrive - SAP SE\IT Works Council Collaboration (IT WoCCo)-Internal - IT WoCCo - Documents\2026_AI_Cases\AI Review Mista\`
    - Falls Zielpfad nicht existiert → Fallback: Projektverzeichnis `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse\`
@@ -78,7 +79,9 @@ Immer dieses Design verwenden — nicht ändern außer der User bittet explizit 
 1. 2-spaltiges Grid: Karte „Personenbezogene Daten" (blauer Rand) + Karte „Auswirkungen auf Mitarbeitende" (lila Rand)
 2. Kein „Fehlende KBV-Pflichtpunkte"-Block
 3. Mitigation-Block: 2-spaltig bei S, 3-spaltig bei M/L (mit Upgrade-Spalte)
-4. Gutachten-Button: separat aufklappbar, `white-space: pre-wrap`
+4. Zwei Buttons nebeneinander (gleicher Style):
+   - **„Case-Details ▾"**: klappt Block auf mit allen IUCR-Feldern direkt aus den Rohdaten (`getUseCaseById`). Pflichtfelder: **Use Case Name, Description, Business Value, Board Area, Main affected Business Process, Other Important Business Process, Solution Type, Service Package, Using UiPath, Labels**. Felder ohne Wert mit „—" kennzeichnen. Format: `white-space: pre-wrap`, grauer linker Rand (`border-left: 4px solid #94a3b8`). Button + Inhalt mit `event.stopPropagation()`.
+   - **„Gutachten ▾"**: separat aufklappbar, `white-space: pre-wrap` (unverändert)
 
 **Style:** Hintergrund `#f1f4f8`, weiße Cards, System-Font, 14px, responsive unter 700px, keine externen Frameworks.
 
