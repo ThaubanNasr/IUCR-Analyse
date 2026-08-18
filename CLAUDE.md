@@ -61,10 +61,49 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 5. **Sortierung:** Cases in der HTML exakt in IUCR-Reihenfolge ausgeben — absteigende Sortierung nach `LIFECYCLE__CREATED_DATE` (neueste oben, älteste unten), identisch zur IUCR-Oberfläche
 6. MISTA-Datei speichern:
    - **Dateiname:** `mista_TT-MM-JJJJ.html` (z. B. `mista_06-08-2026.html`)
-   - **Zielpfad:** `C:\Users\I777951\OneDrive - SAP SE\IT Works Council Collaboration (IT WoCCo)-Internal - IT WoCCo - Documents\2026_AI_Cases\AI Review Mista\`
-   - Falls Zielpfad nicht existiert → Fallback: Projektverzeichnis `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse\`
+   - **Zielpfad:** `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse\`
    - Datei des **gleichen Tages** überschreiben — Dateien anderer Tage **niemals** anfassen
    - **Niemals** Dateien löschen (`rm` ist verboten)
+
+### Statistik — Waiting-Verlauf
+
+Bei jeder MISTA-Erstellung:
+
+1. **Vorherige MISTA lesen:** Neueste `mista_*.html` im Projektverzeichnis suchen (nicht die des heutigen Tages). Darin den Block `<script id="wocco-stats" type="application/json">` extrahieren und als JSON parsen.
+
+2. **Aktuellen Snapshot erstellen:** Liste aller aktuellen „Waiting for WoCCo Feedback" IDs mit `APR__WOCCO__LATEST_STATUS_CHANGE_DATE` (= wann auf Waiting gesetzt).
+
+3. **Differenz berechnen:**
+   - **Neu:** IDs im aktuellen Snapshot, die im vorherigen nicht waren
+   - **Bearbeitet:** IDs im vorherigen Snapshot, die aktuell nicht mehr „Waiting" sind
+
+4. **Stats-Block aktualisieren:** Vorherige `snapshots`-Liste übernehmen, neuen Eintrag anhängen:
+```json
+{
+  "snapshots": [
+    {
+      "date": "2026-08-14",
+      "waiting": ["IRPA-R123", "IRPA-R456"],
+      "new": ["IRPA-R123", "IRPA-R456"],
+      "processed": [],
+      "count": 2
+    }
+  ]
+}
+```
+
+5. **In neue MISTA einbetten:** Den Block als `<script id="wocco-stats" type="application/json">` unsichtbar in die HTML einbauen (wird nicht angezeigt, nur maschinell gelesen).
+
+6. **Statistik-Widget im Header anzeigen:** Unterhalb der Stat-Badges eine kompakte Tabelle:
+
+| Datum | Waiting | Neu | Bearbeitet |
+|-------|---------|-----|-----------|
+| 21.08.2026 | 7 | 3 | 2 |
+| 14.08.2026 | 6 | 6 | 0 |
+
+- Neueste Zeile oben
+- Nur anzeigen wenn mindestens 1 Snapshot vorhanden
+- Style: kompakt, passend zum Header-Design (dunkler Hintergrund, helle Schrift)
 
 ---
 
