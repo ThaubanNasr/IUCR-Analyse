@@ -70,11 +70,11 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 
 ### Statistik — Waiting-Verlauf
 
-Bei jeder MISTA-Erstellung:
+Bei jeder MISTA-Erstellung (außer der User sagt explizit „ohne Statistik"):
 
 1. **Vorherige MISTA lesen:** Neueste `mista_*.html` im Projektverzeichnis suchen (nicht die des heutigen Tages). Darin den Block `<script id="wocco-stats" type="application/json">` extrahieren und als JSON parsen.
 
-2. **Aktuellen Snapshot erstellen:** Liste aller aktuellen „Waiting for WoCCo Feedback" IDs mit `APR__WOCCO__LATEST_STATUS_CHANGE_DATE` (= wann auf Waiting gesetzt).
+2. **Aktuellen Snapshot erstellen:** Liste aller aktuellen „Waiting for WoCCo Feedback" IDs.
 
 3. **Differenz berechnen:**
    - **Neu:** IDs im aktuellen Snapshot, die im vorherigen nicht waren
@@ -97,16 +97,12 @@ Bei jeder MISTA-Erstellung:
 
 5. **In neue MISTA einbetten:** Den Block als `<script id="wocco-stats" type="application/json">` unsichtbar in die HTML einbauen (wird nicht angezeigt, nur maschinell gelesen).
 
-6. **Statistik-Widget im Header anzeigen:** Unterhalb der Stat-Badges eine kompakte Tabelle:
-
-| Datum | Waiting | Neu | Bearbeitet |
-|-------|---------|-----|-----------|
-| 21.08.2026 | 7 | 3 | 2 |
-| 14.08.2026 | 6 | 6 | 0 |
-
-- Neueste Zeile oben
-- Nur anzeigen wenn mindestens 1 Snapshot vorhanden
-- Style: kompakt, passend zum Header-Design (dunkler Hintergrund, helle Schrift)
+6. **Statistik-Tab:** Die MISTA hat zwei Tabs — „📋 Cases" und „📊 Statistik". Der Statistik-Tab enthält:
+   - **KPI-Kacheln:** Aktuell Waiting (mit Trend ▲/▼), Neu heute, Bearbeitet heute, Max. Queue, Anzahl Termine
+   - **Liniendiagramm** (pure Canvas, kein externes Framework): Waiting-Verlauf über alle Snapshots. **Wichtig:** Canvas-Breite erst beim Tab-Öffnen berechnen (`switchTab`), nicht beim DOMContentLoaded — sonst ist `offsetWidth = 0` weil der Tab versteckt ist.
+   - **Verlaufstabelle:** Datum, Waiting, Trend (▲/▼), +Neu, −Bearbeitet — neueste Zeile oben
+   - **Kategoriebalken:** S/M/L der aktuellen Cases als horizontale Balken mit Prozentwert
+   - **Durchschnitts-Kacheln:** Ø Neu pro Termin, Ø Bearbeitet, Netto-Veränderung Ø
 
 ---
 
