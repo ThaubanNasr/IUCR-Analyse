@@ -64,15 +64,17 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 7. **Sortierung:** Cases in der HTML exakt in IUCR-Reihenfolge ausgeben — absteigende Sortierung nach `LIFECYCLE__CREATED_DATE` (neueste oben, älteste unten), identisch zur IUCR-Oberfläche
 8. MISTA-Datei speichern:
    - **Dateiname:** `mista_TT-MM-JJJJ.html` (z. B. `mista_06-08-2026.html`)
-   - **Zielpfad:** `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse\`
+   - **Zielpfad:** `C:\Users\<USERNAME>\MISTA\` — wobei `<USERNAME>` der aktuelle Windows-Benutzername ist (aus Umgebungsvariable `%USERNAME%` bzw. dem Homeverzeichnis des Users). Ordner anlegen falls nicht vorhanden.
+   - Auf dem Rechner von I777951 z.B.: `C:\Users\I777951\MISTA\`
    - Datei des **gleichen Tages** überschreiben — Dateien anderer Tage **niemals** anfassen
    - **Niemals** Dateien löschen (`rm` ist verboten)
+   - **Vorherige MISTA** für den Stats-Block ebenfalls aus `C:\Users\<USERNAME>\MISTA\` lesen (neueste `mista_*.html` dort, nicht das Projektverzeichnis)
 
 ### Statistik — Waiting-Verlauf
 
 Bei jeder MISTA-Erstellung (außer der User sagt explizit „ohne Statistik"):
 
-1. **Vorherige MISTA lesen:** Neueste `mista_*.html` im Projektverzeichnis suchen (nicht die des heutigen Tages). Darin den Block `<script id="wocco-stats" type="application/json">` extrahieren und als JSON parsen.
+1. **Vorherige MISTA lesen:** Neueste `mista_*.html` in `C:\Users\<USERNAME>\MISTA\` suchen (nicht die des heutigen Tages). Darin den Block `<script id="wocco-stats" type="application/json">` extrahieren und als JSON parsen.
 
 2. **Aktuellen Snapshot erstellen:** Liste aller aktuellen „Waiting for WoCCo Feedback" IDs.
 
