@@ -55,11 +55,14 @@ Wenn der User eine MISTA möchte — egal wie formuliert, auch ohne festes Schl�
 
 ### Ablauf
 1. My Action Required per MCP abrufen (WoCCo-Filter via `mcp__iucr-mcp-prod__query`), ggf. zusätzliche Cases je nach Angabe
-2. **Für jeden Case `getUseCaseById` aufrufen** — liefert vollständige Felder (Description, Business Value, Other Process, Labels, Using UiPath etc.). Die Query-Ergebnisse sind teils abgeschnitten und unvollständig.
-3. JIRA-Tickets per MCP abrufen falls INTAI-ID im Namen vorhanden
-4. Jeden Case vollständig analysieren → KBV-Kategorie S / M / L bestimmen
-5. **Sortierung:** Cases in der HTML exakt in IUCR-Reihenfolge ausgeben — absteigende Sortierung nach `LIFECYCLE__CREATED_DATE` (neueste oben, älteste unten), identisch zur IUCR-Oberfläche
-6. MISTA-Datei speichern:
+2. **Vollständigkeit prüfen (Pflicht):** Den `count`-Wert aus der Query-Antwort lesen. Wenn `count` größer ist als die Anzahl zurückgelieferter Datensätze → mit `offset` weiter paginieren bis alle Cases vorhanden sind. Erst danach fortfahren.
+   - Außerdem: `getUseCaseById` liefert bei IDs mit mehreren Versionen (z.B. Obsolete + aktive Neuauflage) **immer nur eine Version**. Wenn die Query einen Case mit `STATUS = 'In Development'` und `APR__WOCCO__STATUS = 'Waiting for WoCCo Feedback'` liefert, aber `getUseCaseById` eine Obsolete-Version zurückgibt → den Case **nicht ausschließen**, sondern die Query-Daten direkt verwenden.
+3. **Duplikat-Prüfung (Pflicht) vor jedem Case-Einfügen:** Bevor ein neuer Case-Block in die HTML eingefügt wird, per `grep` prüfen ob die Case-ID (z.B. `IRPA-R2216`) bereits in der Datei vorkommt. Nur einfügen wenn kein Treffer.
+4. **Für jeden Case `getUseCaseById` aufrufen** — liefert vollständige Felder (Description, Business Value, Other Process, Labels, Using UiPath etc.). Die Query-Ergebnisse sind teils abgeschnitten und unvollständig.
+5. JIRA-Tickets per MCP abrufen falls INTAI-ID im Namen vorhanden
+6. Jeden Case vollständig analysieren → KBV-Kategorie S / M / L bestimmen
+7. **Sortierung:** Cases in der HTML exakt in IUCR-Reihenfolge ausgeben — absteigende Sortierung nach `LIFECYCLE__CREATED_DATE` (neueste oben, älteste unten), identisch zur IUCR-Oberfläche
+8. MISTA-Datei speichern:
    - **Dateiname:** `mista_TT-MM-JJJJ.html` (z. B. `mista_06-08-2026.html`)
    - **Zielpfad:** `C:\Users\I777951\WoCCo\Automate\IUCR-Analyse\`
    - Datei des **gleichen Tages** überschreiben — Dateien anderer Tage **niemals** anfassen
